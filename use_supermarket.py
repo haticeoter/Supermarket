@@ -24,14 +24,28 @@ while True:
     if operation == "E":
         print("Program is terminated.....")
         break
+
     elif operation == "1":
-        pass
+        product.show_products()
+
     elif operation == "2":
-        pass
+        demand = input("What type of product are you looking for? : ")
+        product.find_product(demand)
+
     elif operation == "3":
-        pass
+        sold_product = input("Which product was sold? : ")
+        product.sell_product(sold_product)
+
     elif operation == "4":
-        pass
+        print("Please type the demanding informations:")
+        name = input("Name of the Product:")
+        pro_type = input("Type of the product:")
+        expiration_date = input("Expiration Date of the Product:")
+        price = input("Price of the Product:")
+        new_product = Products(name, pro_type, expiration_date, price)
+        product.add_product(new_product)
+        print("New product added.")
+
     else:
         print("Invalid Operation...")
 

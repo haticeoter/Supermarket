@@ -1,17 +1,18 @@
 import sqlite3
 
 class Products():
-    def __init__(self, name, type, expiration_date, price):
+    def __init__(self, name, pro_type, expiration_date, price):
         self.name = name
-        self.type = type
+        self.pro_type = pro_type
         self.expiration_date = expiration_date
         self.price = price
 
     def __str__(self):
-        return "Product Name: {}\nProduct_Type: {}\nExpiration Date of the Product: {}\nPrice: {}"\
-            .format(self.name, self.type, self.expiration_date, self.price)
+        return "Product Name: {}\nProduct Type: {}\nExpiration Date of the Product: {}\nPrice: {}"\
+            .format(self.name, self.pro_type, self.expiration_date, self.price)
 
 class Supermarket():
+    safe = 0
     def __init__(self):
         self.get_connect()
 
@@ -23,24 +24,41 @@ class Supermarket():
 
     def add_product(self, product):
         self.cursor.execute("INSERT INTO supermarket VALUES(?,?,?,?)",
-                            (product.name, product.type, product.expiration_date, product.price))
+                            (product.name, product.pro_type, product.expiration_date, product.price))
         self.connect.commit()
 
-    def find_product(self):
+    def find_product(self, type):
         self.cursor.execute("Select * From supermarket where type = ?", (type,))
-        product = self.cursor.fetchall()
+        products = self.cursor.fetchall()
 
-        if (len(product) == 0):
+        if (len(products) == 0):
             print("There is no product of this type")
         else:
-            stuff = Products(product[0][0], product[0][1], product[0][2], product[0][3])
-            print(stuff)
+            for product in products:
+                stuff = Products(product[0], product[1], product[2], product[3])
+                print(stuff)
 
     def sell_product(self, name):
-        self.cursor.execute("Delete From supermarket where name = ?", (name,))
-        self.connect.commit()
-        product = self.cursor.fetchall()
-        safe = 0
-        for i in name:
-            safe += product[0][3]
+        self.cursor.execute("SELECT * FROM supermarket WHERE name = ?", (name,))
+        product = self.cursor.fetchone()
+        if product:
+            self.cursor.execute("DELETE FROM supermarket WHERE name = ?", (name,))
+            Supermarket.safe += int(product[3])
+            print("Safe: {}".format(Supermarket.safe))
+            self.connect.commit()
+            print("Product was sold.")
+        else:
+            print("There is no such a product")
+
+    def show_products(self):
+        self.cursor.execute("Select * From supermarket")
+        products = self.cursor.fetchall()
+        if len(products) == 0:
+            print("There is no product yet.")
+        else:
+            for i in products:
+                product = Products(i[0], i[1], i[2], i[3])
+                print(product)
+
+
 
